@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <record model="ir.ui.view" id="liquidacion_cia_view_form">
+            <field name="model">corseg.liquidacion.cia</field>
+            <field name="inherit" ref="corseg.liquidacion_cia_view_form"/>
+            <field name="name">liquidacion_cia_form</field>
+        </record>
+        <record model="ir.ui.view" id="liquidacion_vendedor_view_form">
+            <field name="model">corseg.liquidacion.vendedor</field>
+            <field name="inherit" ref="corseg.liquidacion_vendedor_view_form"/>
+            <field name="name">liquidacion_vendedor_form</field>
+        </record>
+    </data>
+</tryton>

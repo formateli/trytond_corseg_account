@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<data>
+    <xpath expr="/form/field[@name='ajuste_comision_vendedor_seq']" position="after">
+        <separator string="Journals" id="journals" colspan="4" />
+        <label name="journal_comision_cia"/>
+        <field name="journal_comision_cia"/>
+        <label name="journal_comision_vendedor"/>
+        <field name="journal_comision_vendedor"/>
+    </xpath>
+</data>

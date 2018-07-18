@@ -5,10 +5,13 @@
 from trytond.pool import Pool
 from .configuration import *
 from .account import *
+from .liquidacion import *
 
 def register():
     Pool.register(
         Configuration,
         CorsegJournals,
+        LiquidacionCia,
+        LiquidacionVendedor,
         Move,
         module='corseg_account', type_='model')
