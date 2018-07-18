@@ -6,10 +6,18 @@ from trytond.model import Workflow, ModelView, fields
 from trytond.pyson import Eval
 from decimal import Decimal
 from trytond.modules.corseg.tools import auditoria_field, set_auditoria
+from dateutil import parser #TODO delete despues de migracion
 
 __all__ = [
         'LiquidacionCia',
         'LiquidacionVendedor',
+    ]
+
+
+_PAYMENT_STATE = [
+        (None, ''),
+        ('unpaid', 'Sin Pagar'),
+        ('paid', 'Pagado'),
     ]
 
 
@@ -19,7 +27,16 @@ def _set_acc_move(liq, type_):
     Move = pool.get('account.move')
     Period = pool.get('account.period')
     Journal = pool.get('account.journal')
-    period_id = Period.find(liq.company.id, date=liq.fecha)
+    
+    dt_move = liq.fecha
+    
+    #TODO eliminar despues de la migracion
+    dt_min = parser.parse("2018-01-01").date()
+    dt_max = parser.parse("2018-12-31").date()
+    if liq.fecha < dt_min or liq.fecha > dt_max:
+        dt_move = dt_min
+    
+    period_id = Period.find(liq.company.id, date=dt_move)
 
     config = pool.get('corseg.configuration')(1)
     journal = getattr(config, 'journal_comision_' + type_)
@@ -27,7 +44,7 @@ def _set_acc_move(liq, type_):
     move = Move(
         period=period_id,
         journal=journal,
-        date=liq.fecha,
+        date=dt_move,
         origin=liq,
         company=liq.company,
         description=liq.referencia,
@@ -36,28 +53,32 @@ def _set_acc_move(liq, type_):
     lines=[]
     if type_ == 'cia':
         lines.append(
-            _get_move_line(liq, 'debit', journal, period_id, liq.cia.party))
+            _get_move_line(
+                liq, dt_move, 'debit', journal, period_id, liq.cia.party, type_))
         lines.append(
-            _get_move_line(liq, 'credit', journal, period_id, None))
+            _get_move_line(
+                liq, dt_move, 'credit', journal, period_id, None, None))
     else:
         lines.append(
-            _get_move_line(liq, 'debit', journal, period_id, None))
+            _get_move_line(
+                liq, dt_move, 'debit', journal, period_id, None, None))
         lines.append(
-            _get_move_line(liq, 'credit', journal, period_id, liq.vendedor.party))
+            _get_move_line(
+                liq, dt_move, 'credit', journal, period_id, liq.vendedor.party, type_))
 
     move.lines = lines
     move.save()
     return move
 
 
-def _get_move_line(liq, type_, journal, period, party):
+def _get_move_line(liq, dt_move, type_, journal, period, party, liq_type):
     pool = Pool()
     MoveLine = pool.get('account.move.line')
     Currency = pool.get('currency.currency')
     debit = Decimal('0.0')
     credit = Decimal('0.0')
 
-    with Transaction().set_context(date=liq.fecha):
+    with Transaction().set_context(date=dt_move):
         amount = Currency.compute(liq.currency,
             liq.total, liq.company.currency)
     if liq.currency != liq.company.currency:
@@ -74,7 +95,7 @@ def _get_move_line(liq, type_, journal, period, party):
         account = journal.credit_account
         credit = amount
 
-    return MoveLine(
+    line = MoveLine(
         journal=journal,
         period=period,
         party=party,
@@ -85,6 +106,9 @@ def _get_move_line(liq, type_, journal, period, party):
         amount_second_currency=amount_second_currency,
         description=liq.referencia,
     )
+    if liq_type is not None:
+        setattr(line, 'liq_' + liq_type, liq)
+    return line
 
 
 class LiquidacionCia:
@@ -97,6 +121,10 @@ class LiquidacionCia:
                 ('company', '=', Eval('company', -1)),
             ],
         depends=['company'])
+    move_lines = fields.One2Many('account.move.line',
+        'liq_cia', 'Move Lines', readonly=True)
+    payment_state = fields.Selection(_PAYMENT_STATE,
+        'Estado de Pagos', readonly=True)
 
     @classmethod
     @ModelView.button
@@ -106,6 +134,7 @@ class LiquidacionCia:
         for liq in liqs:
             move = _set_acc_move(liq, 'cia')
             liq.move = move
+            liq.payment_state = 'unpaid'
             liq.save()
 
 
@@ -119,6 +148,10 @@ class LiquidacionVendedor:
                 ('company', '=', Eval('company', -1)),
             ],
         depends=['company'])
+    move_lines = fields.One2Many('account.move.line',
+        'liq_vendedor', 'Move Lines', readonly=True)
+    payment_state = fields.Selection(_PAYMENT_STATE,
+        'Estado de Pagos', readonly=True)
 
     @classmethod
     @ModelView.button
@@ -128,4 +161,5 @@ class LiquidacionVendedor:
         for liq in liqs:
             move = _set_acc_move(liq, 'vendedor')
             liq.move = move
+            liq.payment_state = 'unpaid'
             liq.save()

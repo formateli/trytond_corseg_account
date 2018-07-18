@@ -14,4 +14,5 @@ def register():
         LiquidacionCia,
         LiquidacionVendedor,
         Move,
+        Line,
         module='corseg_account', type_='model')
