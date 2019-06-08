@@ -111,8 +111,7 @@ def _get_move_line(liq, dt_move, type_, journal, period, party, liq_type):
     return line
 
 
-class LiquidacionCia:
-    __metaclass__ = PoolMeta
+class LiquidacionCia(metaclass=PoolMeta):
     __name__ = 'corseg.liquidacion.cia'
 
     move = fields.Many2One('account.move', 'Move',
@@ -138,8 +137,7 @@ class LiquidacionCia:
             liq.save()
 
 
-class LiquidacionVendedor:
-    __metaclass__ = PoolMeta
+class LiquidacionVendedor(metaclass=PoolMeta):
     __name__ = 'corseg.liquidacion.vendedor'
 
     move = fields.Many2One('account.move', 'Move',

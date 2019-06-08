@@ -8,8 +8,7 @@ from trytond.modules.company.model import CompanyValueMixin
 __all__ = ['Configuration', 'CorsegJournals']
 
 
-class Configuration:
-    __metaclass__ = PoolMeta
+class Configuration(metaclass=PoolMeta):
     __name__ = 'corseg.configuration'
 
     journal_comision_cia = fields.MultiValue(fields.Many2One(

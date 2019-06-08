@@ -3,16 +3,16 @@
 # the full copyright notices and license terms.
 
 from trytond.pool import Pool
-from .configuration import *
-from .account import *
-from .liquidacion import *
+from . import configuration
+from . import account
+from . import liquidacion
 
 def register():
     Pool.register(
-        Configuration,
-        CorsegJournals,
-        LiquidacionCia,
-        LiquidacionVendedor,
-        Move,
-        Line,
+        configuration.Configuration,
+        configuration.CorsegJournals,
+        liquidacion.LiquidacionCia,
+        liquidacion.LiquidacionVendedor,
+        account.Move,
+        account.Line,
         module='corseg_account', type_='model')
