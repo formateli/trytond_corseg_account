@@ -6,7 +6,8 @@ from trytond.model import fields
 __all__ = ['Move', 'Line']
 
 
-class Move(metaclass=PoolMeta):
+class Move:
+    __metaclass__ = PoolMeta
     __name__ = 'account.move'
 
     @classmethod
@@ -15,7 +16,8 @@ class Move(metaclass=PoolMeta):
         return super(Move, cls)._get_origin() + corseg
 
 
-class Line(metaclass=PoolMeta):
+class Line:
+    __metaclass__ = PoolMeta
     __name__ = 'account.move.line'
 
     liq_cia = fields.Many2One('corseg.liquidacion.cia',
