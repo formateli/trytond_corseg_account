@@ -11,6 +11,7 @@ def register():
     Pool.register(
         configuration.Configuration,
         configuration.CorsegJournals,
+        configuration.CorsegAccounts,
         liquidacion.LiquidacionCia,
         liquidacion.LiquidacionVendedor,
         account.Move,

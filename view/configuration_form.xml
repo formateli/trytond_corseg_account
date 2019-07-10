@@ -8,5 +8,13 @@ this repository contains the full copyright notices and license terms. -->
         <field name="journal_comision_cia"/>
         <label name="journal_comision_vendedor"/>
         <field name="journal_comision_vendedor"/>
+        <label name="debit_account_comision_cia"/>
+        <field name="debit_account_comision_cia"/>
+        <label name="credit_account_comision_cia"/>
+        <field name="credit_account_comision_cia"/>
+        <label name="debit_account_comision_vendedor"/>
+        <field name="debit_account_comision_vendedor"/>
+        <label name="credit_account_comision_vendedor"/>
+        <field name="credit_account_comision_vendedor"/>
     </xpath>
 </data>
